@@ -8,11 +8,6 @@ import urllib
 import urllib2
 import random, string
 
-def random_str(randomlength=20):
-	a = list(string.ascii_letters)
-	random.shuffle(a)
-	return ''.join(a[:randomlength])
-
 class kuaipan:
 	def __init__(self):
 		with open('kuaipan_token.json') as f:
@@ -58,8 +53,6 @@ class kuaipan:
 
 		self.oauth_token_secret = str(j['oauth_token_secret'])
 		self.oauth_token = str(j['oauth_token'])
-		self.oauth_token_secret = str(j['oauth_token_secret'])
-		self.oauth_token = str(j['oauth_token'])
 		self.charged_dir = str(j['charged_dir'])
 		self.user_id = j['user_id']
 		return True
@@ -71,13 +64,29 @@ class kuaipan:
 			return False
 		if not self.__accessToken():
 			return False
+		d = {}
+		d['oauth_consumer_key'] = self.oauth_consumer_key
+		d['oauth_consumer_secret'] = self.oauth_consumer_secret
+		d['oauth_token'] = self.oauth_token
+		d['oauth_token_secret'] = self.oauth_token_secret
+		d['charged_dir'] = self.charged_dir
+		d['user_id'] = self.user_id
+		s = json.dumps(d)
+		with open('kuaipan_token.json','w') as f:
+			f.write(s)
 		return True
 
 	def list(self):
 		pass
-	def get_download_url(self):
-		pass
+
+	def get_download_url(self,path):
+		baseurl = 'http://api-content.dfs.kuaipan.cn/1/fileops/download_file'
+		s = signature.signature(baseurl,self.oauth_consumer_key,self.oauth_consumer_secret,self.oauth_token,self.oauth_token_secret)
+		s.createDict({'root':'app_folder','path':path})
+		url = s.geturl()
+		return url
 
 if __name__ == '__main__':
 	kp = kuaipan()
-	kp.auth()
+#	kp.auth()
+	print kp.get_download_url('当你老了.mp3')
