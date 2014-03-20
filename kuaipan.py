@@ -7,6 +7,8 @@ import time
 import urllib
 import urllib2
 import random, string
+from poster.encode import multipart_encode
+from poster.streaminghttp import StreamingHTTPHandler, StreamingHTTPRedirectHandler, StreamingHTTPSHandler
 
 class kuaipan:
 	def __init__(self):
@@ -86,7 +88,40 @@ class kuaipan:
 		url = s.geturl()
 		return url
 
+	def upload(self,local,remote):
+		baseurl = 'http://api-content.dfs.kuaipan.cn/1/fileops/upload_locate'
+		s = signature.signature(baseurl,self.oauth_consumer_key,self.oauth_consumer_secret,self.oauth_token,self.oauth_token_secret)
+		s.createDict({})
+		url = s.geturl()
+		f = urllib.urlopen(url)
+		if f.getcode() != 200:
+			return False
+		data = f.read()
+		j = json.loads(data)
+		if not j.has_key('url'):
+			return False
+		baseurl = j['url'] + '1/fileops/upload_file'
+		s = signature.signature(baseurl,self.oauth_consumer_key,self.oauth_consumer_secret,self.oauth_token,self.oauth_token_secret,'POST')
+		s.createDict({'overwrite':'True','root':'app_folder','path':remote})
+		opener = urllib2._opener
+		if opener == None:
+			opener = urllib2.build_opener()
+			opener.add_handler(StreamingHTTPHandler())
+			opener.add_handler(StreamingHTTPRedirectHandler())
+			opener.add_handler(StreamingHTTPSHandler())
+		urllib2.install_opener(opener)
+
+		datagen, headers = multipart_encode({"file": open(local,'rb')})
+		headers['Content-Disposition'] = 'form-data; name="file"; filename="test.py"';
+		url = s.geturl()
+		print url
+		request = urllib2.Request(url, datagen, headers)
+		print urllib2.urlopen(request).read()
+
+		return True
+
 if __name__ == '__main__':
 	kp = kuaipan()
 #	kp.auth()
-	print kp.get_download_url('当你老了.mp3')
+	print kp.get_download_url('明年 今日.mp3')
+#	kp.upload('j.mp3','j.mp3')

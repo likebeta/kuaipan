@@ -32,7 +32,7 @@ class signature:
 		if not kvs.has_key("oauth_version"):
 			kvs['oauth_version']='1.0'
 		signValue="%s&%s&%s" % (self.http_method,urllib.quote_plus(self.baseUrl), urllib.quote_plus(self.dict2string(kvs)))
-		#print signValue
+		print signValue
 		kvs["oauth_signature"]=self.encry(signValue)
 		self.kvs=kvs 
 		#print self.kvs 
@@ -49,7 +49,9 @@ class signature:
 		return urllib.quote_plus(signStr.strip())
 
 	def geturl(self):
-		return self.baseUrl+"?"+"&".join([k+"="+v for k,v in self.kvs.items()])
+#		return self.baseUrl+"?"+"&".join([urllib.quote_plus(k)+"="+urllib.quote_plus(v) for k,v in self.kvs.items()])
+		s = self.baseUrl+'?'+'oauth_signature='+self.kvs['oauth_signature']
+		return s+"&"+"&".join([k+"="+urllib.quote(v) for k,v in self.kvs.items() if k != 'oauth_signature'])
 
 if __name__ == "__main__":
 	myKey='xczbJ2JdwFjf4Fug'

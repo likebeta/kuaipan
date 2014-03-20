@@ -1,15 +1,19 @@
 #!/usr/bin/python
+#coding:utf8
 
-import random, string
-import json
+import urllib
 
-def random_str(randomlength=20):
-	a = list(string.ascii_letters)
-	random.shuffle(a)
-	return ''.join(a[:randomlength])
+a = {}
+a['name'] = '易思龙'
+a['age'] = 24
+a['sign'] = 'kjdlkjd452%40lkjkl'
 
+print a
+print urllib.urlencode(a)
 
-with open("kuaipan_token.json") as f:
-	data = f.read()
-	j = json.loads(data)
-	print(j)
+print '&'.join([str(k)+'='+str(v) for k,v in a.items()])
+
+s = '&'.join([urllib.quote(str(k))+'='+urllib.quote(str(v)) for k,v in a.items() if k != 'sign' ])
+s += '&' + 'sign=' + a['sign']
+print s
+
