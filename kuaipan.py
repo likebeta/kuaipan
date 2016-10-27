@@ -31,7 +31,7 @@ class KuaiPan(object):
             return False
         data = f.read()
         j = json.loads(data)
-        if not j.has_key('oauth_token_secret'):
+        if 'oauth_token_secret' not in j:
             return False
         self.oauth_token_secret = str(j['oauth_token_secret'])
         self.oauth_token = str(j['oauth_token'])
@@ -54,7 +54,7 @@ class KuaiPan(object):
             return False
         data = f.read()
         j = json.loads(data)
-        if not j.has_key('oauth_token_secret'):
+        if 'oauth_token_secret' not in j:
             return False
 
         self.oauth_token_secret = str(j['oauth_token_secret'])
@@ -104,7 +104,7 @@ class KuaiPan(object):
             return False
         data = f.read()
         j = json.loads(data)
-        if not j.has_key('url'):
+        if 'url' not in j:
             return False
         baseurl = j['url'] + '1/fileops/upload_file'
         s = signature.Signature(baseurl, self.oauth_consumer_key, self.oauth_consumer_secret, self.oauth_token,

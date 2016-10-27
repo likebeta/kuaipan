@@ -21,17 +21,17 @@ class Signature(object):
         self.queryString = []
 
     def createDict(self, kvs):
-        if not kvs.has_key('oauth_consumer_key'):
+        if 'oauth_consumer_key' not in kvs:
             kvs["oauth_consumer_key"] = self.consumer_key
-        if not kvs.has_key('oauth_token') and len(self.oauth_token) > 0:
+        if 'oauth_token' not in kvs and len(self.oauth_token) > 0:
             kvs["oauth_token"] = self.oauth_token
-        if not kvs.has_key('oauth_signature_method'):
+        if 'oauth_signature_method' not in kvs:
             kvs["oauth_signature_method"] = "HMAC-SHA1"
-        if not kvs.has_key("oauth_timestamp"):
+        if "oauth_timestamp" not in kvs:
             kvs["oauth_timestamp"] = str(int(time.time()))
-        if not kvs.has_key('oauth_nonce'):
+        if 'oauth_nonce' not in kvs:
             kvs["oauth_nonce"] = str(int(time.time())) + str(random.randint(100, 999))  # 13
-        if not kvs.has_key("oauth_version"):
+        if "oauth_version" not in kvs:
             kvs['oauth_version'] = '1.0'
         signValue = "%s&%s&%s" % (
             self.http_method, urllib.quote_plus(self.baseUrl), urllib.quote_plus(self.dict2string(kvs)))
